@@ -1,0 +1,16 @@
+# .pre-commit-config.yaml
+# Add this file to the root of your repository
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0 # Use the latest stable version
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-json
+      - id: check-yaml
+      - id: pretty-format-json # For JSON formatting
+  - repo: https://github.com/google/google-java-format
+    rev: v1.28.0
+    hooks:
+      - id: google-java-format
+        args: [--aosp, --skip-reflowing-long-strings, --skip-javadoc-formatting]

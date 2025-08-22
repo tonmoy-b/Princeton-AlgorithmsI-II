@@ -1,0 +1,50 @@
+name: Lint and Format Java Files
+
+on:
+  push:
+    branches:
+      - main  # Adjust to your main branch name
+  pull_request:
+    branches:
+      - main  # Adjust to your main branch name
+
+jobs:
+  lint-and-format:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref }} # Checkout the branch of the pull request or push event
+
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin' # Or your preferred Java distribution
+        java-version: '17'    # Or your preferred Java version
+
+    - name: Install pre-commit
+      run: |
+        pip install pre-commit
+
+    - name: Run pre-commit hooks (including Java formatting)
+      run: |
+        pre-commit run --all-files || true # Run all hooks, allow failure for reporting
+
+    - name: Check for changes and commit
+      id: check_changes
+      run: |
+        git diff --exit-code || echo "has_changes=true" >> $GITHUB_OUTPUT
+
+    - name: Commit and push changes (if any)
+      if: steps.check_changes.outputs.has_changes == 'true'
+      uses: EndBug/add-and-commit@v9  # Recommended action for adding and committing
+      with:
+        author_name: GitHub Actions Bot
+        author_email: actions@github.com
+        message: "chore: Auto-format and lint Java files"
+        add: '*.java' # Commit only Java files that were modified by pre-commit
+        branch: ${{ github.head_ref }} # Push back to the same branch
+        pull: '--rebase'  # Rebase to avoid conflicts
+
