@@ -1,2 +1,0 @@
-./Algorithms-I/Module_1_CourseIntroduction/file01.java
-./Algorithms-I/Module_1_CourseIntroduction/file02.java
