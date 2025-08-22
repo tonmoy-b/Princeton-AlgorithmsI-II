@@ -23,4 +23,4 @@ if ($javaFiles) {
 }
 
 #Note on usage:
-#     .\ZipJavaFiles.ps1 -SourceFolder "C:\Path\To\Your\Java\Project" -ZipFileName "MyJavaArchive" 
+#     .\ZipJavaFiles.ps1 -SourceFolder "C:\Path\To\Your\Java\Project" -ZipFileName "MyJavaArchive"

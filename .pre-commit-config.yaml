@@ -1,0 +1,74 @@
+# .pre-commit-config.yaml
+repos:
+  - repo: local
+    hooks:
+      - id: google-java-format
+        name: Google Java Format
+        entry: bash -c
+        args:
+          - |
+            set -e
+            echo "🎨 Running Google Java Format..."
+
+            # Ensure tools directory exists
+            mkdir -p tools
+
+            # Download formatter if not present
+            if [ ! -f "tools/google-java-format.jar" ]; then
+                echo "📥 Downloading Google Java Format..."
+                wget -O tools/google-java-format.jar https://github.com/google/google-java-format/releases/download/v1.19.2/google-java-format-1.19.2-all-deps.jar
+            fi
+
+            # Get Java files passed to the hook
+            JAVA_FILES="$@"
+            if [ -n "$JAVA_FILES" ]; then
+                echo "📝 Formatting: $JAVA_FILES"
+                java -jar tools/google-java-format.jar --replace $JAVA_FILES
+                echo "✅ Formatting complete"
+            else
+                echo "✅ No Java files to format"
+            fi
+        language: system
+        files: \.java$
+        pass_filenames: true
+
+  - repo: local
+    hooks:
+      - id: checkstyle
+        name: Checkstyle
+        entry: bash -c
+        args:
+          - |
+            set -e
+            echo "🔍 Running Checkstyle..."
+
+            # Ensure tools directory exists
+            mkdir -p tools
+
+            # Download checkstyle if not present
+            if [ ! -f "tools/checkstyle.jar" ]; then
+                echo "📥 Downloading Checkstyle..."
+                wget -O tools/checkstyle.jar https://github.com/checkstyle/checkstyle/releases/download/checkstyle-10.12.5/checkstyle-10.12.5-all.jar
+            fi
+
+            # Get Java files passed to the hook
+            JAVA_FILES="$@"
+            if [ -n "$JAVA_FILES" ]; then
+                echo "📝 Checking: $JAVA_FILES"
+                java -jar tools/checkstyle.jar -c /google_checks.xml $JAVA_FILES
+                echo "✅ Checkstyle passed"
+            else
+                echo "✅ No Java files to check"
+            fi
+        language: system
+        files: \.java$
+        pass_filenames: true
+
+  # Optional: Additional useful hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-merge-conflict
+      - id: check-added-large-files

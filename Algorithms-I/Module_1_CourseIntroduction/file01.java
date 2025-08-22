@@ -3,6 +3,7 @@ public class file01 {
 
     int a = 1;
     int b = 5;
+    int          ssss = 2;
 
     System.out.println("okokok");
   }
