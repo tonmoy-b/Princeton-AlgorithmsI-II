@@ -71,16 +71,21 @@ jobs:
       run: |
         if [ -n "$(git status --porcelain)" ]; then
           echo "changed=true" >> $GITHUB_OUTPUT
-          echo "❌ Files need formatting:"
+          echo "✅ Files were reformatted:"
           git status --porcelain
-          echo ""
-          echo "Please run the following command locally and commit the changes:"
-          echo "java -jar google-java-format.jar --replace \$(find . -name '*.java')"
-          exit 1
         else
           echo "changed=false" >> $GITHUB_OUTPUT
-          echo "✅ All files are properly formatted"
+          echo "✅ No formatting changes needed"
         fi
+
+    - name: Commit and push changes
+      if: steps.verify-changed-files.outputs.changed == 'true'
+      run: |
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add -A
+        git commit -m "Auto-format Java files with Google Java Format [skip ci]"
+        git push
 
     - name: Create custom Checkstyle config (if needed)
       run: |
