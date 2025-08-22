@@ -14,7 +14,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.PAT_TOKEN }}
         fetch-depth: 0
 
     - name: Set up JDK 11
@@ -71,21 +71,16 @@ jobs:
       run: |
         if [ -n "$(git status --porcelain)" ]; then
           echo "changed=true" >> $GITHUB_OUTPUT
-          echo "Files were reformatted:"
+          echo "❌ Files need formatting:"
           git status --porcelain
+          echo ""
+          echo "Please run the following command locally and commit the changes:"
+          echo "java -jar google-java-format.jar --replace \$(find . -name '*.java')"
+          exit 1
         else
           echo "changed=false" >> $GITHUB_OUTPUT
-          echo "No formatting changes needed"
+          echo "✅ All files are properly formatted"
         fi
-
-    - name: Commit and push changes
-      if: steps.verify-changed-files.outputs.changed == 'true'
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add -A
-        git commit -m "Auto-format Java files with Google Java Format [skip ci]"
-        git push
 
     - name: Create custom Checkstyle config (if needed)
       run: |
